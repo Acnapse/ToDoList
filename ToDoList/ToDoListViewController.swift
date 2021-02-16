@@ -10,15 +10,14 @@ import UIKit
 class ToDoListViewController: UITableViewController {
 
     var itemArray = ["Destroy smth", "Find Milk", "Buy eggs"]
+    let defaults = UserDefaults.standard
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem
+        if let item = defaults.array(forKey: "ToDoListArray") as? [String] {
+            itemArray = item
+        }
     }
 
     // MARK: - TableView Datasource
@@ -46,9 +45,7 @@ class ToDoListViewController: UITableViewController {
         if editingStyle == .delete {
             // Delete the row from the data source
             tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
+        }
     }
 
     // MARK: - TableView Delegate
@@ -80,6 +77,7 @@ class ToDoListViewController: UITableViewController {
         alert.addAction(UIAlertAction(title: "Add Item", style: .default, handler: { [weak self] action in
             
             self?.itemArray.append(textField.text ?? "New Item")
+            self?.defaults.setValue(self?.itemArray, forKey: "ToDoListArray")
             self?.tableView.reloadData()
             
         }))
@@ -87,15 +85,5 @@ class ToDoListViewController: UITableViewController {
         present(alert, animated: true, completion: nil)
         
     }
-    
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }
