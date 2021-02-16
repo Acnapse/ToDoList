@@ -30,7 +30,14 @@
                             <outlet property="delegate" destination="1Rb-AN-etg" id="ih4-TR-fbJ"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="ToDoList" id="oR5-g3-OFJ"/>
+                    <navigationItem key="navigationItem" title="ToDoList" id="oR5-g3-OFJ">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="uAX-zS-kFS">
+                            <color key="tintColor" systemColor="labelColor"/>
+                            <connections>
+                                <action selector="addButtonPressed:" destination="1Rb-AN-etg" id="DPI-eE-JHi"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="jA6-lR-1Ik" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -57,6 +64,9 @@
         </scene>
     </scenes>
     <resources>
+        <systemColor name="labelColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

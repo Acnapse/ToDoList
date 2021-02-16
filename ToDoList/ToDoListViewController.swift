@@ -9,7 +9,7 @@ import UIKit
 
 class ToDoListViewController: UITableViewController {
 
-    let itemArray = ["Destroy smth", "Find Milk", "Buy eggs"]
+    var itemArray = ["Destroy smth", "Find Milk", "Buy eggs"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,7 +21,7 @@ class ToDoListViewController: UITableViewController {
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
     }
 
-    // MARK: - Table view data source
+    // MARK: - TableView Datasource
 
     override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
@@ -63,7 +63,31 @@ class ToDoListViewController: UITableViewController {
 
         tableView.deselectRow(at: indexPath, animated: true)
     }
+    
+    // MARK: - Add New Items
 
+    @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
+        
+        var textField = UITextField()
+        
+        let alert = UIAlertController(title: "Add ToDoList Item", message: "", preferredStyle: .alert)
+        
+        alert.addTextField { alertTextField in
+            alertTextField.placeholder = "Create new item"
+            textField = alertTextField
+        }
+        
+        alert.addAction(UIAlertAction(title: "Add Item", style: .default, handler: { [weak self] action in
+            
+            self?.itemArray.append(textField.text ?? "New Item")
+            self?.tableView.reloadData()
+            
+        }))
+        
+        present(alert, animated: true, completion: nil)
+        
+    }
+    
     /*
     // MARK: - Navigation
 
