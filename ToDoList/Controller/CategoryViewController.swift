@@ -7,6 +7,7 @@
 
 import UIKit
 import RealmSwift
+import ChameleonFramework
 
 class CategoryViewController: UITableViewController {
 
@@ -17,6 +18,8 @@ class CategoryViewController: UITableViewController {
         super.viewDidLoad()
 
         loadCategories()
+        tableView.separatorStyle = .none
+        
     }
 
     // MARK: - Table view data source
@@ -32,17 +35,41 @@ class CategoryViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryItemCell", for: indexPath)
         
-        cell.textLabel?.text = categories?[indexPath.row].name ?? "No Categories added yet"
+        if let category = categories?[indexPath.row] {
+            cell.textLabel?.text = category.name
+            cell.backgroundColor = UIColor(hexString: category.backgroundColor)
+        } else {
+            cell.textLabel?.text = "No Categories added yet"
+            cell.backgroundColor = UIColor.white
+        }
         
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 80.0
+    }
+    
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            if let category = categories?[indexPath.row] {
+                do {
+                    try realm.write{
+                        realm.delete(category)
+                    }
+                } catch {
+                    print("DEBUG: Error deleting a category \(error)")
+                }
+                
+                tableView.reloadData()
+            }
+        }
     }
     
     // MARK: - Table view delegate
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
         performSegue(withIdentifier: "goToItems", sender: self)
-        
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
@@ -52,9 +79,8 @@ class CategoryViewController: UITableViewController {
         if let indexPath = tableView.indexPathForSelectedRow {
             destinationVC.selectedCategory = categories?[indexPath.row]
         }
-        
     }
-    
+        
     // MARK: - Add New Categories
 
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
@@ -71,6 +97,8 @@ class CategoryViewController: UITableViewController {
         alert.addAction(UIAlertAction(title: "Add", style: .default, handler: { action in
             let newCategory = Category()
             newCategory.name = textField.text ?? "New Category"
+            newCategory.backgroundColor = UIColor.randomFlat().hexValue()
+            
             self.save(category: newCategory)
         }))
         
@@ -80,7 +108,6 @@ class CategoryViewController: UITableViewController {
     // MARK: - Data Manipulation Methods
     
     func save(category: Category) {
-        
         do {
             try realm.write({
                 realm.add(category)

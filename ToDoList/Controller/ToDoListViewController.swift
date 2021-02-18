@@ -7,6 +7,7 @@
 
 import UIKit
 import RealmSwift
+import ChameleonFramework
 
 class ToDoListViewController: UITableViewController {
 
@@ -19,9 +20,10 @@ class ToDoListViewController: UITableViewController {
             loadItems()
         }
     }
-        
+            
     override func viewDidLoad() {
         super.viewDidLoad()
+        tableView.separatorStyle = .none
     }
 
     // MARK: - TableView Datasource
@@ -40,22 +42,36 @@ class ToDoListViewController: UITableViewController {
         if let item = toDoItems?[indexPath.row] {
             cell.textLabel?.text = item.title
             cell.accessoryType = item.checked ? .checkmark : .none
+
+            if let category = selectedCategory, let color = UIColor(hexString: category.backgroundColor)?.darken(byPercentage: CGFloat(indexPath.row) / CGFloat(toDoItems!.count)) {
+                cell.backgroundColor = color
+                cell.textLabel?.textColor = ContrastColorOf(color, returnFlat: true)
+            }
         } else {
             cell.textLabel?.text = "No Items Added"
         }
         
         return cell
     }
-
-    // Override to support editing the table view.
+    
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             if let item = toDoItems?[indexPath.row] {
-                realm.delete(item)
-            } else {
-                print("DEBUG: Error deleting an item")
+                do {
+                    try realm.write{
+                        realm.delete(item)
+                    }
+                } catch {
+                    print("DEBUG: Error deleting a category \(error)")
+                }
+                
+                tableView.reloadData()
             }
         }
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 80.0
     }
 
     // MARK: - TableView Delegate
